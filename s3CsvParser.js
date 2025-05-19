@@ -7,7 +7,6 @@ dayjs.extend(customParseFormat);
 const s3 = new S3Client();
 
 export async function parseVintedFromCsvS3(bucket, key) {
-    console.log('parseVintedFromCsvS3', bucket, key);
     const command = new GetObjectCommand({ Bucket: bucket, Key: key });
     const response = await s3.send(command);
 
@@ -44,9 +43,8 @@ export async function parseVintedFromCsvS3(bucket, key) {
                     const dateStr = cols[0].replace(/"/g, '').replace(/\r/g, '').trim();
                     const date = dayjs(dateStr, 'DD/MM/YYYY', true).isValid() ? dayjs(dateStr, 'DD/MM/YYYY').format('YYYY-MM-DD') : null;
                     if (!date) {
-                        console.log('Date invalide détectée dans le CSV:', cols[0]);
+                        console.error('Date invalide détectée dans le CSV:', cols[0]);
                     }
-                    console.log('Parsing date:', dateStr, '->', dayjs(dateStr, 'DD/MM/YYYY', true).format());
                     const montant = parseFloat(cols[3]?.replace(',', '.'));
                     currentBlock = { date, montant };
                     motifVinted = false;

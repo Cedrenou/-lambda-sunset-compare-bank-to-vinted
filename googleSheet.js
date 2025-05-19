@@ -1,7 +1,6 @@
 import { google } from 'googleapis';
 
 export async function getSheetRows(auth, spreadsheetId, sheetName) {
-    console.log('getSheetRows', spreadsheetId, sheetName);
     const sheets = google.sheets({ version: 'v4', auth });
     const { data } = await sheets.spreadsheets.values.get({
         spreadsheetId,
@@ -16,7 +15,6 @@ export async function getSheetRows(auth, spreadsheetId, sheetName) {
 }
 
 export async function cocherCase(auth, spreadsheetId, sheetName, rowIndex) {
-    console.log('cocherCase', spreadsheetId, sheetName, rowIndex);
     const sheets = google.sheets({ version: 'v4', auth });
     await sheets.spreadsheets.values.update({
         spreadsheetId,
