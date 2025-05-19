@@ -25,3 +25,9 @@ export async function cocherCase(auth, spreadsheetId, sheetName, rowIndex) {
         requestBody: { values: [[true]] }
     });
 } 
+
+export async function getAllSheetNames(auth, spreadsheetId) {
+    const sheets = google.sheets({ version: 'v4', auth });
+    const { data } = await sheets.spreadsheets.get({ spreadsheetId });
+    return data.sheets.map(sheet => sheet.properties.title);
+}

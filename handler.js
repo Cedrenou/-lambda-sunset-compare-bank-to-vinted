@@ -1,7 +1,7 @@
 import { JWT } from 'google-auth-library';
 import dayjs from 'dayjs';
 import { parseVintedFromCsvS3 } from './s3CsvParser.js';
-import { getSheetRows, cocherCase } from './googleSheet.js';
+import { getSheetRows, cocherCase, getAllSheetNames } from './googleSheet.js';
 import { findMatchingTransaction } from './matcher.js';
 
 export const handler = async (event) => {
@@ -16,16 +16,19 @@ export const handler = async (event) => {
         scopes: ['https://www.googleapis.com/auth/spreadsheets']
     });
 
-    const sheetName = dayjs().format('MMMM YYYY');
+    // Récupérer tous les noms d'onglets
+    const sheetNames = await getAllSheetNames(auth, spreadsheetId);
     const csvRows = await parseVintedFromCsvS3(bucket, key);
     console.log("csvRows:", csvRows);
-    const sheetRows = await getSheetRows(auth, spreadsheetId, sheetName);
 
-    for (const row of sheetRows) {
-        if (row.verifie || !row.montant) continue;
-        const match = findMatchingTransaction(row, csvRows);
-        if (match) {
-            await cocherCase(auth, spreadsheetId, sheetName, row.rowIndex);
+    for (const sheetName of sheetNames) {
+        const sheetRows = await getSheetRows(auth, spreadsheetId, sheetName);
+        for (const row of sheetRows) {
+            if (row.verifie || !row.montant) continue;
+            const match = findMatchingTransaction(row, csvRows);
+            if (match) {
+                await cocherCase(auth, spreadsheetId, sheetName, row.rowIndex);
+            }
         }
     }
-}
+};
