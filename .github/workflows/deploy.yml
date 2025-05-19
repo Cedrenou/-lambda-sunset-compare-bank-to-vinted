@@ -15,10 +15,24 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '22'
+        node-version: '20'
+        
+    - name: List files
+      run: |
+        echo "Contenu du répertoire :"
+        ls -la
         
     - name: Install dependencies
       run: npm install
+      
+    - name: Verify files
+      run: |
+        echo "Vérification des fichiers :"
+        for file in *.js; do
+          echo "Contenu de $file :"
+          cat "$file"
+          echo "---"
+        done
       
     - name: Create deployment package
       run: |
